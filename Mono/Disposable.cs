@@ -14,15 +14,9 @@ namespace Mono {
 
 	static class Disposable {
 
-		public static Disposable<T> Owned<T> (T value) where T : class, IDisposable
-		{
-			return new Disposable<T> (value, owned: true);
-		}
+		public static Disposable<T> Owned<T> (T value) where T : class, IDisposable => new Disposable<T> (value, owned: true);
 
-		public static Disposable<T> NotOwned<T> (T value) where T : class, IDisposable
-		{
-			return new Disposable<T> (value, owned: false);
-		}
+		public static Disposable<T> NotOwned<T> (T value) where T : class, IDisposable => new Disposable<T> (value, owned: false);
 	}
 
 	struct Disposable<T> : IDisposable where T : class, IDisposable {

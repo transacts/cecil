@@ -11,6 +11,7 @@
 using System;
 
 using Mono.Collections.Generic;
+using static Mono.Cecil.Mixin;
 
 namespace Mono.Cecil {
 
@@ -32,9 +33,7 @@ namespace Mono.Cecil {
 
 		readonly MemberReference member;
 
-		public MemberReference Member {
-			get { return member; }
-		}
+		public MemberReference Member => member;
 
 		public IMetadataScope Scope {
 			get {
@@ -73,9 +72,7 @@ namespace Mono.Cecil {
 
 		readonly IAssemblyResolver assembly_resolver;
 
-		public IAssemblyResolver AssemblyResolver {
-			get { return assembly_resolver; }
-		}
+		public IAssemblyResolver AssemblyResolver => assembly_resolver;
 
 		public MetadataResolver (IAssemblyResolver assemblyResolver)
 		{
@@ -87,7 +84,7 @@ namespace Mono.Cecil {
 
 		public virtual TypeDefinition Resolve (TypeReference type)
 		{
-			Mixin.CheckType (type);
+			CheckType (type);
 
 			type = type.GetElementType ();
 
@@ -150,15 +147,12 @@ namespace Mono.Cecil {
 				return module.GetType (type.Namespace, type.Name);
 
 			var declaring_type = type.DeclaringType.Resolve ();
-			if (declaring_type == null)
-				return null;
-
-			return declaring_type.GetNestedType (type.TypeFullName ());
+			return declaring_type?.GetNestedType (type.TypeFullName ());
 		}
 
 		public virtual FieldDefinition Resolve (FieldReference field)
 		{
-			Mixin.CheckField (field);
+			CheckField (field);
 
 			var type = Resolve (field.DeclaringType);
 			if (type == null)
@@ -205,7 +199,7 @@ namespace Mono.Cecil {
 
 		public virtual MethodDefinition Resolve (MethodReference method)
 		{
-			Mixin.CheckMethod (method);
+			CheckMethod (method);
 
 			var type = Resolve (method.DeclaringType);
 			if (type == null)

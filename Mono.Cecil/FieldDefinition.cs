@@ -10,6 +10,7 @@
 
 using System;
 using Mono.Collections.Generic;
+using static Mono.Cecil.Mixin;
 
 namespace Mono.Cecil {
 
@@ -18,22 +19,22 @@ namespace Mono.Cecil {
 		ushort attributes;
 		Collection<CustomAttribute> custom_attributes;
 
-		int offset = Mixin.NotResolvedMarker;
+		int offset = NotResolvedMarker;
 
-		internal int rva = Mixin.NotResolvedMarker;
+		internal int rva = NotResolvedMarker;
 		byte [] initial_value;
 
-		object constant = Mixin.NotResolved;
+		object constant = NotResolved;
 
 		MarshalInfo marshal_info;
 
 		void ResolveLayout ()
 		{
-			if (offset != Mixin.NotResolvedMarker)
+			if (offset != NotResolvedMarker)
 				return;
 
 			if (!HasImage) {
-				offset = Mixin.NoDataMarker;
+				offset = NoDataMarker;
 				return;
 			}
 
@@ -70,7 +71,7 @@ namespace Mono.Cecil {
 
 		void ResolveRVA ()
 		{
-			if (rva != Mixin.NotResolvedMarker)
+			if (rva != NotResolvedMarker)
 				return;
 
 			if (!HasImage)
@@ -97,10 +98,7 @@ namespace Mono.Cecil {
 
 				ResolveRVA ();
 
-				if (initial_value == null)
-					initial_value = Empty<byte>.Array;
-
-				return initial_value;
+				return initial_value ?? (initial_value = Empty<byte>.Array);
 			}
 			set {
 				initial_value = value;
@@ -122,9 +120,9 @@ namespace Mono.Cecil {
 			get {
 				this.ResolveConstant (ref constant, Module);
 
-				return constant != Mixin.NoValue;
+				return constant != NoValue;
 			}
-			set { if (!value) constant = Mixin.NoValue; }
+			set { if (!value) constant = NoValue; }
 		}
 
 		public object Constant {
@@ -132,27 +130,13 @@ namespace Mono.Cecil {
 			set { constant = value; }
 		}
 
-		public bool HasCustomAttributes {
-			get {
-				if (custom_attributes != null)
-					return custom_attributes.Count > 0;
+		public bool HasCustomAttributes => custom_attributes != null
+			? custom_attributes.Count > 0
+			: this.GetHasCustomAttributes (Module);
 
-				return this.GetHasCustomAttributes (Module);
-			}
-		}
+		public Collection<CustomAttribute> CustomAttributes => custom_attributes ?? (this.GetCustomAttributes (ref custom_attributes, Module));
 
-		public Collection<CustomAttribute> CustomAttributes {
-			get { return custom_attributes ?? (this.GetCustomAttributes (ref custom_attributes, Module)); }
-		}
-
-		public bool HasMarshalInfo {
-			get {
-				if (marshal_info != null)
-					return true;
-
-				return this.GetHasMarshalInfo (Module);
-			}
-		}
+		public bool HasMarshalInfo => marshal_info != null || this.GetHasMarshalInfo (Module);
 
 		public MarshalInfo MarshalInfo {
 			get { return marshal_info ?? (this.GetMarshalInfo (ref marshal_info, Module)); }
@@ -238,9 +222,7 @@ namespace Mono.Cecil {
 
 		#endregion
 
-		public override bool IsDefinition {
-			get { return true; }
-		}
+		public override bool IsDefinition => true;
 
 		public new TypeDefinition DeclaringType {
 			get { return (TypeDefinition) base.DeclaringType; }
@@ -253,10 +235,7 @@ namespace Mono.Cecil {
 			this.attributes = (ushort) attributes;
 		}
 
-		public override FieldDefinition Resolve ()
-		{
-			return this;
-		}
+		public override FieldDefinition Resolve () => this;
 	}
 
 	static partial class Mixin {

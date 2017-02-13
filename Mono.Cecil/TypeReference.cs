@@ -105,30 +105,15 @@ namespace Mono.Cecil {
 			set { projection = value; }
 		}
 
-		IGenericParameterProvider IGenericContext.Type {
-			get { return this; }
-		}
+		IGenericParameterProvider IGenericContext.Type => this;
 
-		IGenericParameterProvider IGenericContext.Method {
-			get { return null; }
-		}
+		IGenericParameterProvider IGenericContext.Method => null;
 
-		GenericParameterType IGenericParameterProvider.GenericParameterType {
-			get { return GenericParameterType.Type; }
-		}
+		GenericParameterType IGenericParameterProvider.GenericParameterType => GenericParameterType.Type;
 
-		public virtual bool HasGenericParameters {
-			get { return !generic_parameters.IsNullOrEmpty (); }
-		}
+		public virtual bool HasGenericParameters => !generic_parameters.IsNullOrEmpty ();
 
-		public virtual Collection<GenericParameter> GenericParameters {
-			get {
-				if (generic_parameters != null)
-					return generic_parameters;
-
-				return generic_parameters = new GenericParameterCollection (this);
-			}
-		}
+		public virtual Collection<GenericParameter> GenericParameters => generic_parameters ?? (generic_parameters = new GenericParameterCollection (this));
 
 		public virtual IMetadataScope Scope {
 			get {
@@ -153,9 +138,7 @@ namespace Mono.Cecil {
 			}
 		}
 
-		public bool IsNested {
-			get { return this.DeclaringType != null; }
-		}
+		public bool IsNested => this.DeclaringType != null;
 
 		public override TypeReference DeclaringType {
 			get { return base.DeclaringType; }
@@ -181,49 +164,27 @@ namespace Mono.Cecil {
 			}
 		}
 
-		public virtual bool IsByReference {
-			get { return false; }
-		}
+		public virtual bool IsByReference => false;
 
-		public virtual bool IsPointer {
-			get { return false; }
-		}
+		public virtual bool IsPointer => false;
 
-		public virtual bool IsSentinel {
-			get { return false; }
-		}
+		public virtual bool IsSentinel => false;
 
-		public virtual bool IsArray {
-			get { return false; }
-		}
+		public virtual bool IsArray => false;
 
-		public virtual bool IsGenericParameter {
-			get { return false; }
-		}
+		public virtual bool IsGenericParameter => false;
 
-		public virtual bool IsGenericInstance {
-			get { return false; }
-		}
+		public virtual bool IsGenericInstance => false;
 
-		public virtual bool IsRequiredModifier {
-			get { return false; }
-		}
+		public virtual bool IsRequiredModifier => false;
 
-		public virtual bool IsOptionalModifier {
-			get { return false; }
-		}
+		public virtual bool IsOptionalModifier => false;
 
-		public virtual bool IsPinned {
-			get { return false; }
-		}
+		public virtual bool IsPinned => false;
 
-		public virtual bool IsFunctionPointer {
-			get { return false; }
-		}
+		public virtual bool IsFunctionPointer => false;
 
-		public virtual bool IsPrimitive {
-			get { return etype.IsPrimitive (); }
-		}
+		public virtual bool IsPrimitive => etype.IsPrimitive ();
 
 		public virtual MetadataType MetadataType {
 			get {
@@ -256,20 +217,11 @@ namespace Mono.Cecil {
 			value_type = valueType;
 		}
 
-		protected virtual void ClearFullName ()
-		{
-			this.fullname = null;
-		}
+		protected virtual void ClearFullName () => this.fullname = null;
 
-		public virtual TypeReference GetElementType ()
-		{
-			return this;
-		}
+		public virtual TypeReference GetElementType () => this;
 
-		protected override IMemberDefinition ResolveDefinition ()
-		{
-			return this.Resolve ();
-		}
+		protected override IMemberDefinition ResolveDefinition () => this.Resolve ();
 
 		public new virtual TypeDefinition Resolve ()
 		{
@@ -306,18 +258,11 @@ namespace Mono.Cecil {
 			}
 		}
 
-		public static string TypeFullName (this TypeReference self)
-		{
-			return string.IsNullOrEmpty (self.Namespace)
-				? self.Name
-				: self.Namespace + '.' + self.Name;
-		}
+		public static string TypeFullName (this TypeReference self) => string.IsNullOrEmpty (self.Namespace)
+			? self.Name
+			: self.Namespace + '.' + self.Name;
 
-		public static bool IsTypeOf (this TypeReference self, string @namespace, string name)
-		{
-			return self.Name == name
-				&& self.Namespace == @namespace;
-		}
+		public static bool IsTypeOf (this TypeReference self, string @namespace, string name) => self.Name == name && self.Namespace == @namespace;
 
 		public static bool IsTypeSpecification (this TypeReference type)
 		{

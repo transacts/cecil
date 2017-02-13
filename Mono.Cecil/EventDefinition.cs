@@ -85,18 +85,11 @@ namespace Mono.Cecil {
 			}
 		}
 
-		public bool HasCustomAttributes {
-			get {
-				if (custom_attributes != null)
-					return custom_attributes.Count > 0;
+		public bool HasCustomAttributes => custom_attributes != null
+			? custom_attributes.Count > 0
+			: this.GetHasCustomAttributes (Module);
 
-				return this.GetHasCustomAttributes (Module);
-			}
-		}
-
-		public Collection<CustomAttribute> CustomAttributes {
-			get { return custom_attributes ?? (this.GetCustomAttributes (ref custom_attributes, Module)); }
-		}
+		public Collection<CustomAttribute> CustomAttributes => custom_attributes ?? (this.GetCustomAttributes (ref custom_attributes, Module));
 
 		#region EventAttributes
 
@@ -117,9 +110,7 @@ namespace Mono.Cecil {
 			set { base.DeclaringType = value; }
 		}
 
-		public override bool IsDefinition {
-			get { return true; }
-		}
+		public override bool IsDefinition => true;
 
 		public EventDefinition (string name, EventAttributes attributes, TypeReference eventType)
 			: base (name, eventType)
@@ -147,9 +138,6 @@ namespace Mono.Cecil {
 			}
 		}
 
-		public override EventDefinition Resolve ()
-		{
-			return this;
-		}
+		public override EventDefinition Resolve () => this;
 	}
 }

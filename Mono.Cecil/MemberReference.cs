@@ -44,9 +44,7 @@ namespace Mono.Cecil {
 			set { token = value; }
 		}
 
-		public bool IsWindowsRuntimeProjection {
-			get { return projection != null; }
-		}
+		public bool IsWindowsRuntimeProjection => projection != null;
 
 		internal MemberReferenceProjection WindowsRuntimeProjection {
 			get { return (MemberReferenceProjection) projection; }
@@ -56,24 +54,15 @@ namespace Mono.Cecil {
 		internal bool HasImage {
 			get {
 				var module = Module;
-				if (module == null)
-					return false;
-
-				return module.HasImage;
+				return module != null && module.HasImage;
 			}
 		}
 
-		public virtual ModuleDefinition Module {
-			get { return declaring_type != null ? declaring_type.Module : null; }
-		}
+		public virtual ModuleDefinition Module => declaring_type?.Module;
 
-		public virtual bool IsDefinition {
-			get { return false; }
-		}
+		public virtual bool IsDefinition => false;
 
-		public virtual bool ContainsGenericParameter {
-			get { return declaring_type != null && declaring_type.ContainsGenericParameter; }
-		}
+		public virtual bool ContainsGenericParameter => declaring_type != null && declaring_type.ContainsGenericParameter;
 
 		internal MemberReference ()
 		{
@@ -84,18 +73,11 @@ namespace Mono.Cecil {
 			this.name = name ?? string.Empty;
 		}
 
-		internal string MemberFullName ()
-		{
-			if (declaring_type == null)
-				return name;
+		internal string MemberFullName () => declaring_type == null
+			? name
+			: declaring_type.FullName + "::" + name;
 
-			return declaring_type.FullName + "::" + name;
-		}
-
-		public IMemberDefinition Resolve ()
-		{
-			return ResolveDefinition ();
-		}
+		public IMemberDefinition Resolve () => ResolveDefinition ();
 
 		protected abstract IMemberDefinition ResolveDefinition ();
 

@@ -12,6 +12,7 @@ using System;
 using System.Text;
 using Mono.Collections.Generic;
 using MD = Mono.Cecil.Metadata;
+using static Mono.Cecil.Mixin;
 
 namespace Mono.Cecil {
 
@@ -30,9 +31,7 @@ namespace Mono.Cecil {
 			set { upper_bound = value; }
 		}
 
-		public bool IsSized {
-			get { return lower_bound.HasValue || upper_bound.HasValue; }
-		}
+		public bool IsSized => lower_bound.HasValue || upper_bound.HasValue;
 
 		public ArrayDimension (int? lowerBound, int? upperBound)
 		{
@@ -63,9 +62,7 @@ namespace Mono.Cecil {
 			}
 		}
 
-		public int Rank {
-			get { return dimensions == null ? 1 : dimensions.Count; }
-		}
+		public int Rank => dimensions?.Count ?? 1;
 
 		public bool IsVector {
 			get {
@@ -86,13 +83,9 @@ namespace Mono.Cecil {
 			set { throw new InvalidOperationException (); }
 		}
 
-		public override string Name {
-			get { return base.Name + Suffix; }
-		}
+		public override string Name => base.Name + Suffix;
 
-		public override string FullName {
-			get { return base.FullName + Suffix; }
-		}
+		public override string FullName => base.FullName + Suffix;
 
 		string Suffix {
 			get {
@@ -113,21 +106,19 @@ namespace Mono.Cecil {
 			}
 		}
 
-		public override bool IsArray {
-			get { return true; }
-		}
+		public override bool IsArray => true;
 
 		public ArrayType (TypeReference type)
 			: base (type)
 		{
-			Mixin.CheckType (type);
+			CheckType (type);
 			this.etype = MD.ElementType.Array;
 		}
 
 		public ArrayType (TypeReference type, int rank)
 			: this (type)
 		{
-			Mixin.CheckType (type);
+			CheckType (type);
 
 			if (rank == 1)
 				return;

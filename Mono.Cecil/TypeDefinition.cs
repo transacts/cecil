@@ -13,6 +13,8 @@ using System;
 using Mono.Cecil.Metadata;
 using Mono.Collections.Generic;
 
+using static Mono.Cecil.Mixin;
+
 namespace Mono.Cecil {
 
 	public sealed class TypeDefinition : TypeReference, IMemberDefinition, ISecurityDeclarationProvider {
@@ -22,8 +24,8 @@ namespace Mono.Cecil {
 		internal Range fields_range;
 		internal Range methods_range;
 
-		short packing_size = Mixin.NotResolvedMarker;
-		int class_size = Mixin.NotResolvedMarker;
+		short packing_size = NotResolvedMarker;
+		int class_size = NotResolvedMarker;
 
 		InterfaceImplementationCollection interfaces;
 		Collection<TypeDefinition> nested_types;
@@ -111,14 +113,9 @@ namespace Mono.Cecil {
 			set { class_size = value; }
 		}
 
-		public bool HasInterfaces {
-			get {
-				if (interfaces != null)
-					return interfaces.Count > 0;
-
-				return HasImage && Module.Read (this, (type, reader) => reader.HasInterfaces (type));
-			}
-		}
+		public bool HasInterfaces => interfaces != null
+			? interfaces.Count > 0
+			: HasImage && Module.Read (this, (type, reader) => reader.HasInterfaces (type));
 
 		public Collection<InterfaceImplementation> Interfaces {
 			get {
@@ -132,14 +129,9 @@ namespace Mono.Cecil {
 			}
 		}
 
-		public bool HasNestedTypes {
-			get {
-				if (nested_types != null)
-					return nested_types.Count > 0;
-
-				return HasImage && Module.Read (this, (type, reader) => reader.HasNestedTypes (type));
-			}
-		}
+		public bool HasNestedTypes => nested_types != null
+			? nested_types.Count > 0
+			: HasImage && Module.Read (this, (type, reader) => reader.HasNestedTypes (type));
 
 		public Collection<TypeDefinition> NestedTypes {
 			get {
@@ -153,14 +145,9 @@ namespace Mono.Cecil {
 			}
 		}
 
-		public bool HasMethods {
-			get {
-				if (methods != null)
-					return methods.Count > 0;
-
-				return HasImage && methods_range.Length > 0;
-			}
-		}
+		public bool HasMethods => methods != null
+			? methods.Count > 0
+			: HasImage && methods_range.Length > 0;
 
 		public Collection<MethodDefinition> Methods {
 			get {
@@ -174,14 +161,9 @@ namespace Mono.Cecil {
 			}
 		}
 
-		public bool HasFields {
-			get {
-				if (fields != null)
-					return fields.Count > 0;
-
-				return HasImage && fields_range.Length > 0;
-			}
-		}
+		public bool HasFields => fields != null
+			? fields.Count > 0
+			: HasImage && fields_range.Length > 0;
 
 		public Collection<FieldDefinition> Fields {
 			get {
@@ -195,14 +177,9 @@ namespace Mono.Cecil {
 			}
 		}
 
-		public bool HasEvents {
-			get {
-				if (events != null)
-					return events.Count > 0;
-
-				return HasImage && Module.Read (this, (type, reader) => reader.HasEvents (type));
-			}
-		}
+		public bool HasEvents => events != null
+			? events.Count > 0
+			: HasImage && Module.Read (this, (type, reader) => reader.HasEvents (type));
 
 		public Collection<EventDefinition> Events {
 			get {
@@ -216,14 +193,9 @@ namespace Mono.Cecil {
 			}
 		}
 
-		public bool HasProperties {
-			get {
-				if (properties != null)
-					return properties.Count > 0;
-
-				return HasImage && Module.Read (this, (type, reader) => reader.HasProperties (type));
-			}
-		}
+		public bool HasProperties => properties != null
+			? properties.Count > 0
+			: HasImage && Module.Read (this, (type, reader) => reader.HasProperties (type));
 
 		public Collection<PropertyDefinition> Properties {
 			get {
@@ -237,44 +209,21 @@ namespace Mono.Cecil {
 			}
 		}
 
-		public bool HasSecurityDeclarations {
-			get {
-				if (security_declarations != null)
-					return security_declarations.Count > 0;
+		public bool HasSecurityDeclarations => security_declarations != null
+			? security_declarations.Count > 0
+			: this.GetHasSecurityDeclarations (Module);
 
-				return this.GetHasSecurityDeclarations (Module);
-			}
-		}
+		public Collection<SecurityDeclaration> SecurityDeclarations => security_declarations ?? (this.GetSecurityDeclarations (ref security_declarations, Module));
 
-		public Collection<SecurityDeclaration> SecurityDeclarations {
-			get { return security_declarations ?? (this.GetSecurityDeclarations (ref security_declarations, Module)); }
-		}
+		public bool HasCustomAttributes => custom_attributes != null ? custom_attributes.Count > 0 : this.GetHasCustomAttributes (Module);
 
-		public bool HasCustomAttributes {
-			get {
-				if (custom_attributes != null)
-					return custom_attributes.Count > 0;
+		public Collection<CustomAttribute> CustomAttributes => custom_attributes ?? (this.GetCustomAttributes (ref custom_attributes, Module));
 
-				return this.GetHasCustomAttributes (Module);
-			}
-		}
+		public override bool HasGenericParameters => generic_parameters != null
+			? generic_parameters.Count > 0
+			: this.GetHasGenericParameters (Module);
 
-		public Collection<CustomAttribute> CustomAttributes {
-			get { return custom_attributes ?? (this.GetCustomAttributes (ref custom_attributes, Module)); }
-		}
-
-		public override bool HasGenericParameters {
-			get {
-				if (generic_parameters != null)
-					return generic_parameters.Count > 0;
-
-				return this.GetHasGenericParameters (Module);
-			}
-		}
-
-		public override Collection<GenericParameter> GenericParameters {
-			get { return generic_parameters ?? (this.GetGenericParameters (ref generic_parameters, Module)); }
-		}
+		public override Collection<GenericParameter> GenericParameters => generic_parameters ?? (this.GetGenericParameters (ref generic_parameters, Module));
 
 		#region TypeAttributes
 
@@ -405,18 +354,11 @@ namespace Mono.Cecil {
 
 		#endregion
 
-		public bool IsEnum {
-			get { return base_type != null && base_type.IsTypeOf ("System", "Enum"); }
-		}
+		public bool IsEnum => base_type != null && base_type.IsTypeOf ("System", "Enum");
 
-		public override bool IsValueType {
-			get {
-				if (base_type == null)
-					return false;
-
-				return base_type.IsTypeOf ("System", "Enum") || (base_type.IsTypeOf ("System", "ValueType") && !this.IsTypeOf ("System", "Enum"));
-			}
-		}
+		public override bool IsValueType => base_type != null
+			&& (base_type.IsTypeOf ("System", "Enum") || (base_type.IsTypeOf ("System", "ValueType")
+			&& !this.IsTypeOf ("System", "Enum")));
 
 		public override bool IsPrimitive {
 			get {
@@ -435,9 +377,7 @@ namespace Mono.Cecil {
 			}
 		}
 
-		public override bool IsDefinition {
-			get { return true; }
-		}
+		public override bool IsDefinition => true;
 
 		public new TypeDefinition DeclaringType {
 			get { return (TypeDefinition) base.DeclaringType; }
@@ -475,14 +415,11 @@ namespace Mono.Cecil {
 				nested_types [i].ClearFullName ();
 		}
 
-		public override TypeDefinition Resolve ()
-		{
-			return this;
-		}
+		public override TypeDefinition Resolve () => this;
 	}
 
-	public sealed class InterfaceImplementation : ICustomAttributeProvider
-	{
+	public sealed class InterfaceImplementation : ICustomAttributeProvider {
+
 		internal TypeDefinition type;
 		internal MetadataToken token;
 
@@ -528,7 +465,7 @@ namespace Mono.Cecil {
 
 		public InterfaceImplementation (TypeReference interfaceType)
 		{
-			Mixin.CheckType (interfaceType, Mixin.Argument.interfaceType);
+			CheckType (interfaceType, Argument.interfaceType);
 
 			this.interface_type = interfaceType;
 			this.token = new MetadataToken (TokenType.InterfaceImpl);
@@ -550,25 +487,13 @@ namespace Mono.Cecil {
 			this.type = type;
 		}
 
-		protected override void OnAdd (InterfaceImplementation item, int index)
-		{
-			item.type = type;
-		}
+		protected override void OnAdd (InterfaceImplementation item, int index) => item.type = type;
 
-		protected override void OnInsert (InterfaceImplementation item, int index)
-		{
-			item.type = type;
-		}
+		protected override void OnInsert (InterfaceImplementation item, int index) => item.type = type;
 
-		protected override void OnSet (InterfaceImplementation item, int index)
-		{
-			item.type = type;
-		}
+		protected override void OnSet (InterfaceImplementation item, int index) => item.type = type;
 
-		protected override void OnRemove (InterfaceImplementation item, int index)
-		{
-			item.type = null;
-		}
+		protected override void OnRemove (InterfaceImplementation item, int index) => item.type = null;
 	}
 
 	static partial class Mixin {

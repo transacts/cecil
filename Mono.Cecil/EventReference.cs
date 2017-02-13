@@ -8,7 +8,7 @@
 // Licensed under the MIT/X11 license.
 //
 
-using System;
+using static Mono.Cecil.Mixin;
 
 namespace Mono.Cecil {
 
@@ -21,21 +21,16 @@ namespace Mono.Cecil {
 			set { event_type = value; }
 		}
 
-		public override string FullName {
-			get { return event_type.FullName + " " + MemberFullName (); }
-		}
+		public override string FullName => event_type.FullName + " " + MemberFullName ();
 
 		protected EventReference (string name, TypeReference eventType)
 			: base (name)
 		{
-			Mixin.CheckType (eventType, Mixin.Argument.eventType);
+			CheckType (eventType, Argument.eventType);
 			event_type = eventType;
 		}
 
-		protected override IMemberDefinition ResolveDefinition ()
-		{
-			return this.Resolve ();
-		}
+		protected override IMemberDefinition ResolveDefinition () => this.Resolve ();
 
 		public new abstract EventDefinition Resolve ();
 	}

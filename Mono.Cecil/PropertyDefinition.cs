@@ -12,6 +12,8 @@ using System.Text;
 
 using Mono.Collections.Generic;
 
+using static Mono.Cecil.Mixin;
+
 namespace Mono.Cecil {
 
 	public sealed class PropertyDefinition : PropertyReference, IMemberDefinition, IConstantProvider {
@@ -25,7 +27,7 @@ namespace Mono.Cecil {
 		internal MethodDefinition set_method;
 		internal Collection<MethodDefinition> other_methods;
 
-		object constant = Mixin.NotResolved;
+		object constant = NotResolved;
 
 		public PropertyAttributes Attributes {
 			get { return (PropertyAttributes) attributes; }
@@ -48,18 +50,11 @@ namespace Mono.Cecil {
 			set { has_this = value; }
 		}
 
-		public bool HasCustomAttributes {
-			get {
-				if (custom_attributes != null)
-					return custom_attributes.Count > 0;
+		public bool HasCustomAttributes => custom_attributes != null
+			? custom_attributes.Count > 0
+			: this.GetHasCustomAttributes (Module);
 
-				return this.GetHasCustomAttributes (Module);
-			}
-		}
-
-		public Collection<CustomAttribute> CustomAttributes {
-			get { return custom_attributes ?? (this.GetCustomAttributes (ref custom_attributes, Module)); }
-		}
+		public Collection<CustomAttribute> CustomAttributes => custom_attributes ?? (this.GetCustomAttributes (ref custom_attributes, Module));
 
 		public MethodDefinition GetMethod {
 			get {
@@ -154,9 +149,9 @@ namespace Mono.Cecil {
 			get {
 				this.ResolveConstant (ref constant, Module);
 
-				return constant != Mixin.NoValue;
+				return constant != NoValue;
 			}
-			set { if (!value) constant = Mixin.NoValue; }
+			set { if (!value) constant = NoValue; }
 		}
 
 		public object Constant {
@@ -188,14 +183,12 @@ namespace Mono.Cecil {
 			set { base.DeclaringType = value; }
 		}
 
-		public override bool IsDefinition {
-			get { return true; }
-		}
+		public override bool IsDefinition => true;
 
 		public override string FullName {
 			get {
 				var builder = new StringBuilder ();
-				builder.Append (PropertyType.ToString ());
+				builder.Append (PropertyType);
 				builder.Append (' ');
 				builder.Append (MemberFullName ());
 				builder.Append ('(');
@@ -236,9 +229,6 @@ namespace Mono.Cecil {
 			}
 		}
 
-		public override PropertyDefinition Resolve ()
-		{
-			return this;
-		}
+		public override PropertyDefinition Resolve () => this;
 	}
 }

@@ -10,6 +10,8 @@
 
 using System;
 
+using static Mono.Cecil.Mixin;
+
 namespace Mono.Cecil {
 
 	public class FieldReference : MemberReference {
@@ -21,13 +23,9 @@ namespace Mono.Cecil {
 			set { field_type = value; }
 		}
 
-		public override string FullName {
-			get { return field_type.FullName + " " + MemberFullName (); }
-		}
+		public override string FullName => field_type.FullName + " " + MemberFullName ();
 
-		public override bool ContainsGenericParameter {
-			get { return field_type.ContainsGenericParameter || base.ContainsGenericParameter; }
-		}
+		public override bool ContainsGenericParameter => field_type.ContainsGenericParameter || base.ContainsGenericParameter;
 
 		internal FieldReference ()
 		{
@@ -37,7 +35,7 @@ namespace Mono.Cecil {
 		public FieldReference (string name, TypeReference fieldType)
 			: base (name)
 		{
-			Mixin.CheckType (fieldType, Mixin.Argument.fieldType);
+			CheckType (fieldType, Argument.fieldType);
 
 			this.field_type = fieldType;
 			this.token = new MetadataToken (TokenType.MemberRef);
@@ -46,15 +44,12 @@ namespace Mono.Cecil {
 		public FieldReference (string name, TypeReference fieldType, TypeReference declaringType)
 			: this (name, fieldType)
 		{
-			Mixin.CheckType (declaringType, Mixin.Argument.declaringType);
+			CheckType (declaringType, Argument.declaringType);
 
 			this.DeclaringType = declaringType;
 		}
 
-		protected override IMemberDefinition ResolveDefinition ()
-		{
-			return this.Resolve ();
-		}
+		protected override IMemberDefinition ResolveDefinition () => this.Resolve ();
 
 		public new virtual FieldDefinition Resolve ()
 		{

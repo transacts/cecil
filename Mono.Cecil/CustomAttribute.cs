@@ -12,6 +12,8 @@ using System;
 
 using Mono.Collections.Generic;
 
+using static Mono.Cecil.Mixin;
+
 namespace Mono.Cecil {
 
 	public struct CustomAttributeArgument {
@@ -19,17 +21,13 @@ namespace Mono.Cecil {
 		readonly TypeReference type;
 		readonly object value;
 
-		public TypeReference Type {
-			get { return type; }
-		}
+		public TypeReference Type => type;
 
-		public object Value {
-			get { return value; }
-		}
+		public object Value => value;
 
 		public CustomAttributeArgument (TypeReference type, object value)
 		{
-			Mixin.CheckType (type);
+			CheckType (type);
 			this.type = type;
 			this.value = value;
 		}
@@ -40,17 +38,13 @@ namespace Mono.Cecil {
 		readonly string name;
 		readonly CustomAttributeArgument argument;
 
-		public string Name {
-			get { return name; }
-		}
+		public string Name => name;
 
-		public CustomAttributeArgument Argument {
-			get { return argument; }
-		}
+		public CustomAttributeArgument Argument => argument;
 
 		public CustomAttributeNamedArgument (string name, CustomAttributeArgument argument)
 		{
-			Mixin.CheckName (name);
+			CheckName (name);
 			this.name = name;
 			this.argument = argument;
 		}
@@ -82,13 +76,9 @@ namespace Mono.Cecil {
 			set { constructor = value; }
 		}
 
-		public TypeReference AttributeType {
-			get { return constructor.DeclaringType; }
-		}
+		public TypeReference AttributeType => constructor.DeclaringType;
 
-		public bool IsResolved {
-			get { return resolved; }
-		}
+		public bool IsResolved => resolved;
 
 		public bool HasConstructorArguments {
 			get {
@@ -138,13 +128,9 @@ namespace Mono.Cecil {
 			}
 		}
 
-		internal bool HasImage {
-			get { return constructor != null && constructor.HasImage; }
-		}
+		internal bool HasImage => constructor != null && constructor.HasImage;
 
-		internal ModuleDefinition Module {
-			get { return constructor.Module; }
-		}
+		internal ModuleDefinition Module => constructor.Module;
 
 		internal CustomAttribute (uint signature, MethodReference constructor)
 		{

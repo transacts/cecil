@@ -10,10 +10,12 @@
 
 using System;
 using System.Collections.Generic;
-using Mono.Collections.Generic;
 using SR = System.Reflection;
 
+using Mono.Collections.Generic;
 using Mono.Cecil.Metadata;
+
+using static Mono.Cecil.Mixin;
 
 namespace Mono.Cecil {
 
@@ -47,7 +49,7 @@ namespace Mono.Cecil {
 
 		Collection<IGenericParameterProvider> stack;
 
-		public bool IsEmpty { get { return stack == null; } }
+		public bool IsEmpty => stack == null;
 
 		public ImportGenericContext (IGenericParameterProvider provider)
 		{
@@ -120,10 +122,7 @@ namespace Mono.Cecil {
 			throw new InvalidOperationException ();
 		}
 
-		public static ImportGenericContext For (IGenericParameterProvider context)
-		{
-			return context != null ? new ImportGenericContext (context) : default (ImportGenericContext);
-		}
+		public static ImportGenericContext For (IGenericParameterProvider context) => context != null ? new ImportGenericContext (context) : default (ImportGenericContext);
 	}
 
 #if !PCL && !NET_CORE
@@ -134,7 +133,7 @@ namespace Mono.Cecil {
 
 		public ReflectionImporter (ModuleDefinition module)
 		{
-			Mixin.CheckModule (module);
+			CheckModule (module);
 
 			this.module = module;
 		}
@@ -165,10 +164,7 @@ namespace Mono.Cecil {
 			{ typeof (object), ElementType.Object },
 		};
 
-		TypeReference ImportType (Type type, ImportGenericContext context)
-		{
-			return ImportType (type, context, ImportGenericKind.Open);
-		}
+		TypeReference ImportType (Type type, ImportGenericContext context) => ImportType (type, context, ImportGenericKind.Open);
 
 		TypeReference ImportType (Type type, ImportGenericContext context, ImportGenericKind import_kind)
 		{
@@ -195,20 +191,11 @@ namespace Mono.Cecil {
 			return reference;
 		}
 
-		static bool ImportOpenGenericType (Type type, ImportGenericKind import_kind)
-		{
-			return type.IsGenericType && type.IsGenericTypeDefinition && import_kind == ImportGenericKind.Open;
-		}
+		static bool ImportOpenGenericType (Type type, ImportGenericKind import_kind) => type.IsGenericType && type.IsGenericTypeDefinition && import_kind == ImportGenericKind.Open;
 
-		static bool ImportOpenGenericMethod (SR.MethodBase method, ImportGenericKind import_kind)
-		{
-			return method.IsGenericMethod && method.IsGenericMethodDefinition && import_kind == ImportGenericKind.Open;
-		}
+		static bool ImportOpenGenericMethod (SR.MethodBase method, ImportGenericKind import_kind) => method.IsGenericMethod && method.IsGenericMethodDefinition && import_kind == ImportGenericKind.Open;
 
-		static bool IsNestedType (Type type)
-		{
-			return type.IsNested;
-		}
+		static bool IsNestedType (Type type) => type.IsNested;
 
 		TypeReference ImportTypeSpecification (Type type, ImportGenericContext context)
 		{
@@ -244,18 +231,11 @@ namespace Mono.Cecil {
 			throw new InvalidOperationException();
 		}
 
-		static string NormalizeMethodName (SR.MethodBase method)
-		{
-			return NormalizeTypeFullName (method.DeclaringType) + "." + method.Name;
-		}
+		static string NormalizeMethodName (SR.MethodBase method) => NormalizeTypeFullName (method.DeclaringType) + "." + method.Name;
 
-		static string NormalizeTypeFullName (Type type)
-		{
-			if (IsNestedType (type))
-				return NormalizeTypeFullName (type.DeclaringType) + "/" + type.Name;
-
-			return type.FullName;
-		}
+		static string NormalizeTypeFullName (Type type) => IsNestedType (type)
+			? NormalizeTypeFullName (type.DeclaringType) + "/" + type.Name
+			: type.FullName;
 
 		TypeReference ImportGenericInstance (Type type, ImportGenericContext context)
 		{
@@ -275,17 +255,11 @@ namespace Mono.Cecil {
 			}
 		}
 
-		static bool IsTypeSpecification (Type type)
-		{
-			return type.HasElementType
-				|| IsGenericInstance (type)
-				|| type.IsGenericParameter;
-		}
+		static bool IsTypeSpecification (Type type) => type.HasElementType
+			|| IsGenericInstance (type)
+			|| type.IsGenericParameter;
 
-		static bool IsGenericInstance (Type type)
-		{
-			return type.IsGenericType && !type.IsGenericTypeDefinition;
-		}
+		static bool IsGenericInstance (Type type) => type.IsGenericType && !type.IsGenericTypeDefinition;
 
 		static ElementType ImportElementType (Type type)
 		{
@@ -352,10 +326,7 @@ namespace Mono.Cecil {
 			}
 		}
 
-		static SR.FieldInfo ResolveFieldDefinition (SR.FieldInfo field)
-		{
-			return field.Module.ResolveField (field.MetadataToken);
-		}
+		static SR.FieldInfo ResolveFieldDefinition (SR.FieldInfo field) => field.Module.ResolveField (field.MetadataToken);
 
 		MethodReference ImportMethod (SR.MethodBase method, ImportGenericContext context, ImportGenericKind import_kind)
 		{
@@ -410,10 +381,7 @@ namespace Mono.Cecil {
 				provider_parameters.Add (new GenericParameter (arguments [i].Name, provider));
 		}
 
-		static bool IsMethodSpecification (SR.MethodBase method)
-		{
-			return method.IsGenericMethod && !method.IsGenericMethodDefinition;
-		}
+		static bool IsMethodSpecification (SR.MethodBase method) => method.IsGenericMethod && !method.IsGenericMethodDefinition;
 
 		MethodReference ImportMethodSpecification (SR.MethodBase method, ImportGenericContext context)
 		{
@@ -437,14 +405,11 @@ namespace Mono.Cecil {
 			}
 		}
 
-		static bool HasCallingConvention (SR.MethodBase method, SR.CallingConventions conventions)
-		{
-			return (method.CallingConvention & conventions) != 0;
-		}
+		static bool HasCallingConvention (SR.MethodBase method, SR.CallingConventions conventions) => (method.CallingConvention & conventions) != 0;
 
 		public virtual TypeReference ImportReference (Type type, IGenericParameterProvider context)
 		{
-			Mixin.CheckType (type);
+			CheckType (type);
 			return ImportType (
 				type,
 				ImportGenericContext.For (context),
@@ -453,13 +418,13 @@ namespace Mono.Cecil {
 
 		public virtual FieldReference ImportReference (SR.FieldInfo field, IGenericParameterProvider context)
 		{
-			Mixin.CheckField (field);
+			CheckField (field);
 			return ImportField (field, ImportGenericContext.For (context));
 		}
 
 		public virtual MethodReference ImportReference (SR.MethodBase method, IGenericParameterProvider context)
 		{
-			Mixin.CheckMethod (method);
+			CheckMethod (method);
 			return ImportMethod (method,
 				ImportGenericContext.For (context),
 				context != null ? ImportGenericKind.Open : ImportGenericKind.Definition);
@@ -716,19 +681,19 @@ namespace Mono.Cecil {
 
 		public virtual TypeReference ImportReference (TypeReference type, IGenericParameterProvider context)
 		{
-			Mixin.CheckType (type);
+			CheckType (type);
 			return ImportType (type, ImportGenericContext.For (context));
 		}
 
 		public virtual FieldReference ImportReference (FieldReference field, IGenericParameterProvider context)
 		{
-			Mixin.CheckField (field);
+			CheckField (field);
 			return ImportField (field, ImportGenericContext.For (context));
 		}
 
 		public virtual MethodReference ImportReference (MethodReference method, IGenericParameterProvider context)
 		{
-			Mixin.CheckMethod (method);
+			CheckMethod (method);
 			return ImportMethod (method, ImportGenericContext.For (context));
 		}
 	}

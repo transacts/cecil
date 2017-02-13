@@ -31,15 +31,9 @@ namespace Mono.Cecil {
 
 	static partial class Mixin {
 
-		public static bool IsNullOrEmpty<T> (this T [] self)
-		{
-			return self == null || self.Length == 0;
-		}
+		public static bool IsNullOrEmpty<T> (this T [] self) => self == null || self.Length == 0;
 
-		public static bool IsNullOrEmpty<T> (this Collection<T> self)
-		{
-			return self == null || self.size == 0;
-		}
+		public static bool IsNullOrEmpty<T> (this Collection<T> self) => self == null || self.size == 0;
 
 		public static T [] Resize<T> (this T [] self, int length)
 		{

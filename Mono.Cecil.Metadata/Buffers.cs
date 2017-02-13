@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Text;
 
 using Mono.Cecil.PE;
+using static Mono.Cecil.Mixin;
 
 using RVA = System.UInt32;
 
@@ -25,20 +26,18 @@ namespace Mono.Cecil.Metadata {
 		readonly ModuleDefinition module;
 		readonly MetadataBuilder metadata;
 
-		internal MetadataTable [] tables = new MetadataTable [Mixin.TableCount];
+		internal MetadataTable [] tables = new MetadataTable [TableCount];
 
 		bool large_string;
 		bool large_blob;
 		bool large_guid;
 
-		readonly int [] coded_index_sizes = new int [Mixin.CodedIndexCount];
+		readonly int [] coded_index_sizes = new int [CodedIndexCount];
 		readonly Func<Table, int> counter;
 
 		internal uint [] string_offsets;
 
-		public override bool IsEmpty {
-			get { return false; }
-		}
+		public override bool IsEmpty => false;
 
 		public TableHeapBuffer (ModuleDefinition module, MetadataBuilder metadata)
 			: base (24)
@@ -256,9 +255,7 @@ namespace Mono.Cecil.Metadata {
 
 	abstract class HeapBuffer : ByteBuffer {
 
-		public bool IsLarge {
-			get { return base.length > 65535; }
-		}
+		public bool IsLarge => base.length > 65535;
 
 		public abstract bool IsEmpty { get; }
 
@@ -272,9 +269,7 @@ namespace Mono.Cecil.Metadata {
 
 		readonly Dictionary<Guid, uint> guids = new Dictionary<Guid, uint> ();
 
-		public override bool IsEmpty {
-			get { return length == 0; }
-		}
+		public override bool IsEmpty => length == 0;
 
 		public GuidHeapBuffer ()
 			: base (16)
@@ -303,9 +298,7 @@ namespace Mono.Cecil.Metadata {
 
 		protected Dictionary<string, uint> strings = new Dictionary<string, uint> (StringComparer.Ordinal);
 
-		public sealed override bool IsEmpty {
-			get { return length <= 1; }
-		}
+		public sealed override bool IsEmpty => length <= 1;
 
 		public StringHeapBuffer ()
 			: base (1)
@@ -361,10 +354,7 @@ namespace Mono.Cecil.Metadata {
 			return sorted;
 		}
 
-		static bool IsLowSurrogateChar (int c)
-		{
-			return unchecked((uint)(c - 0xDC00)) <= 0xDFFF - 0xDC00;
-		}
+		static bool IsLowSurrogateChar (int c) => unchecked((uint)(c - 0xDC00)) <= 0xDFFF - 0xDC00;
 
 		protected virtual void WriteString (string @string)
 		{
@@ -374,9 +364,9 @@ namespace Mono.Cecil.Metadata {
 
 		// Sorts strings such that a string is followed immediately by all strings
 		// that are a suffix of it.  
-		private class SuffixSort : IComparer<KeyValuePair<string, uint>> {
+		class SuffixSort : IComparer<KeyValuePair<string, uint>> {
 
-			public int Compare(KeyValuePair<string, uint> xPair, KeyValuePair<string, uint> yPair)
+			public int Compare (KeyValuePair<string, uint> xPair, KeyValuePair<string, uint> yPair)
 			{
 				var x = xPair.Key;
 				var y = yPair.Key;
@@ -400,9 +390,7 @@ namespace Mono.Cecil.Metadata {
 
 		readonly Dictionary<ByteBuffer, uint> blobs = new Dictionary<ByteBuffer, uint> (new ByteBufferEqualityComparer ());
 
-		public override bool IsEmpty {
-			get { return length <= 1; }
-		}
+		public override bool IsEmpty => length <= 1;
 
 		public BlobHeapBuffer ()
 			: base (1)
@@ -474,9 +462,7 @@ namespace Mono.Cecil.Metadata {
 
 	sealed class PdbHeapBuffer : HeapBuffer {
 
-		public override bool IsEmpty {
-			get { return false; }
-		}
+		public override bool IsEmpty => false;
 
 		public PdbHeapBuffer ()
 			: base (0)

@@ -8,9 +8,9 @@
 // Licensed under the MIT/X11 license.
 //
 
-using System;
-
 using Mono.Collections.Generic;
+
+using static Mono.Cecil.Mixin;
 
 namespace Mono.Cecil {
 
@@ -30,15 +30,11 @@ namespace Mono.Cecil {
 		internal PropertyReference (string name, TypeReference propertyType)
 			: base (name)
 		{
-			Mixin.CheckType (propertyType, Mixin.Argument.propertyType);
-
+			CheckType (propertyType, Argument.propertyType);
 			property_type = propertyType;
 		}
 
-		protected override IMemberDefinition ResolveDefinition ()
-		{
-			return this.Resolve ();
-		}
+		protected override IMemberDefinition ResolveDefinition () => this.Resolve ();
 
 		public new abstract PropertyDefinition Resolve ();
 	}

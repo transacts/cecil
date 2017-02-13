@@ -11,6 +11,7 @@
 using System;
 using Mono.Cecil.Cil;
 using Mono.Collections.Generic;
+using static Mono.Cecil.Mixin;
 
 using RVA = System.UInt32;
 
@@ -100,52 +101,32 @@ namespace Mono.Cecil {
 			module.Read (this, (method, reader) => reader.ReadAllSemantics (method));
 		}
 
-		public bool HasSecurityDeclarations {
-			get {
-				if (security_declarations != null)
-					return security_declarations.Count > 0;
+		public bool HasSecurityDeclarations => security_declarations != null
+			? security_declarations.Count > 0
+			: this.GetHasSecurityDeclarations (Module);
 
-				return this.GetHasSecurityDeclarations (Module);
-			}
-		}
+		public Collection<SecurityDeclaration> SecurityDeclarations => security_declarations ?? (this.GetSecurityDeclarations (ref security_declarations, Module));
 
-		public Collection<SecurityDeclaration> SecurityDeclarations {
-			get { return security_declarations ?? (this.GetSecurityDeclarations (ref security_declarations, Module)); }
-		}
+		public bool HasCustomAttributes => custom_attributes != null
+			? custom_attributes.Count > 0
+			: this.GetHasCustomAttributes (Module);
 
-		public bool HasCustomAttributes {
-			get {
-				if (custom_attributes != null)
-					return custom_attributes.Count > 0;
+		public Collection<CustomAttribute> CustomAttributes => custom_attributes ?? (this.GetCustomAttributes (ref custom_attributes, Module));
 
-				return this.GetHasCustomAttributes (Module);
-			}
-		}
+		public int RVA => (int) rva;
 
-		public Collection<CustomAttribute> CustomAttributes {
-			get { return custom_attributes ?? (this.GetCustomAttributes (ref custom_attributes, Module)); }
-		}
-
-		public int RVA {
-			get { return (int) rva; }
-		}
-
-		public bool HasBody {
-			get {
-				return (attributes & (ushort) MethodAttributes.Abstract) == 0 &&
-					(attributes & (ushort) MethodAttributes.PInvokeImpl) == 0 &&
-					(impl_attributes & (ushort) MethodImplAttributes.InternalCall) == 0 &&
-					(impl_attributes & (ushort) MethodImplAttributes.Native) == 0 &&
-					(impl_attributes & (ushort) MethodImplAttributes.Unmanaged) == 0 &&
-					(impl_attributes & (ushort) MethodImplAttributes.Runtime) == 0;
-			}
-		}
+		public bool HasBody => (attributes & (ushort) MethodAttributes.Abstract) == 0 &&
+							(attributes & (ushort) MethodAttributes.PInvokeImpl) == 0 &&
+							(impl_attributes & (ushort) MethodImplAttributes.InternalCall) == 0 &&
+							(impl_attributes & (ushort) MethodImplAttributes.Native) == 0 &&
+							(impl_attributes & (ushort) MethodImplAttributes.Unmanaged) == 0 &&
+							(impl_attributes & (ushort) MethodImplAttributes.Runtime) == 0;
 
 		public MethodBody Body {
 			get {
-				MethodBody localBody = this.body;
-				if (localBody != null)
-					return localBody;
+				var local_body = body;
+				if (local_body != null)
+					return local_body;
 
 				if (!HasBody)
 					return null;
@@ -174,20 +155,13 @@ namespace Mono.Cecil {
 				if (debug_info != null)
 					return debug_info;
 
-				Mixin.Read (Body);
+				Read (Body);
 
 				return debug_info ?? (debug_info = new MethodDebugInformation (this));
 			}
 		}
 
-		public bool HasPInvokeInfo {
-			get {
-				if (pinvoke != null)
-					return true;
-
-				return IsPInvokeImpl;
-			}
-		}
+		public bool HasPInvokeInfo => pinvoke != null || IsPInvokeImpl;
 
 		public PInvokeInfo PInvokeInfo {
 			get {
@@ -205,14 +179,9 @@ namespace Mono.Cecil {
 			}
 		}
 
-		public bool HasOverrides {
-			get {
-				if (overrides != null)
-					return overrides.Count > 0;
-
-				return HasImage && Module.Read (this, (method, reader) => reader.HasOverrides (method));
-			}
-		}
+		public bool HasOverrides => overrides != null
+			? overrides.Count > 0
+			: HasImage && Module.Read (this, (method, reader) => reader.HasOverrides (method));
 
 		public Collection<MethodReference> Overrides {
 			get {
@@ -226,22 +195,15 @@ namespace Mono.Cecil {
 			}
 		}
 
-		public override bool HasGenericParameters {
-			get {
-				if (generic_parameters != null)
-					return generic_parameters.Count > 0;
+		public override bool HasGenericParameters => generic_parameters != null
+			? generic_parameters.Count > 0
+			: this.GetHasGenericParameters (Module);
 
-				return this.GetHasGenericParameters (Module);
-			}
-		}
-
-		public override Collection<GenericParameter> GenericParameters {
-			get { return generic_parameters ?? (this.GetGenericParameters (ref generic_parameters, Module)); }
-		}
+		public override Collection<GenericParameter> GenericParameters => generic_parameters ?? (this.GetGenericParameters (ref generic_parameters, Module));
 
 		public bool HasCustomDebugInformations {
 			get {
-				Mixin.Read (Body);
+				Read (Body);
 
 				return !custom_infos.IsNullOrEmpty ();
 			}
@@ -249,7 +211,7 @@ namespace Mono.Cecil {
 
 		public Collection<CustomDebugInformation> CustomDebugInformations {
 			get {
-				Mixin.Read (Body);
+				Read (Body);
 
 				return custom_infos ?? (custom_infos = new Collection<CustomDebugInformation> ());
 			}
@@ -457,17 +419,9 @@ namespace Mono.Cecil {
 			set { base.DeclaringType = value; }
 		}
 
-		public bool IsConstructor {
-			get {
-				return this.IsRuntimeSpecialName
-					&& this.IsSpecialName
-					&& (this.Name == ".cctor" || this.Name == ".ctor");
-			}
-		}
+		public bool IsConstructor => this.IsRuntimeSpecialName && this.IsSpecialName && (this.Name == ".cctor" || this.Name == ".ctor");
 
-		public override bool IsDefinition {
-			get { return true; }
-		}
+		public override bool IsDefinition => true;
 
 		internal MethodDefinition ()
 		{
@@ -482,10 +436,7 @@ namespace Mono.Cecil {
 			this.token = new MetadataToken (TokenType.Method);
 		}
 
-		public override MethodDefinition Resolve ()
-		{
-			return this;
-		}
+		public override MethodDefinition Resolve () => this;
 	}
 
 	static partial class Mixin {
@@ -519,10 +470,7 @@ namespace Mono.Cecil {
 			return variables [index];
 		}
 
-		public static bool GetSemantics (this MethodDefinition self, MethodSemanticsAttributes semantics)
-		{
-			return (self.SemanticsAttributes & semantics) != 0;
-		}
+		public static bool GetSemantics (this MethodDefinition self, MethodSemanticsAttributes semantics) => (self.SemanticsAttributes & semantics) != 0;
 
 		public static void SetSemantics (this MethodDefinition self, MethodSemanticsAttributes semantics, bool value)
 		{
