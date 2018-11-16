@@ -6,6 +6,57 @@
     <RootNamespace>Mono.Cecil.Mdb.Tests</RootNamespace>
     <AssemblyName>Mono.Cecil.Mdb.Tests</AssemblyName>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'net_462_Debug_ReadOnly|AnyCPU' ">
+    <OutputPath>bin\net_462_Debug_ReadOnly\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'net_3_5_Debug_ReadOnly|AnyCPU' ">
+    <OutputPath>bin\net_3_5_Debug_ReadOnly\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'net_3_5_Debug|AnyCPU' ">
+    <OutputPath>bin\net_3_5_Debug\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'net_3_5_Release_ReadOnly|AnyCPU' ">
+    <OutputPath>bin\net_3_5_Release_ReadOnly\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'net_3_5_Release|AnyCPU' ">
+    <OutputPath>bin\net_3_5_Release\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'net_4_0_Debug_ReadOnly|AnyCPU' ">
+    <OutputPath>bin\net_4_0_Debug_ReadOnly\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'net_4_0_Debug|AnyCPU' ">
+    <OutputPath>bin\net_4_0_Debug\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'net_4_0_Release_ReadOnly|AnyCPU' ">
+    <OutputPath>bin\net_4_0_Release_ReadOnly\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'net_4_0_Release|AnyCPU' ">
+    <OutputPath>bin\net_4_0_Release\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'net_462_Debug|AnyCPU' ">
+    <OutputPath>bin\net_462_Debug\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'net_462_Release_ReadOnly|AnyCPU' ">
+    <OutputPath>bin\net_462_Release_ReadOnly\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'net_462_Release|AnyCPU' ">
+    <OutputPath>bin\net_462_Release\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'netstandard_Debug_ReadOnly|AnyCPU' ">
+    <OutputPath>bin\netstandard_Debug_ReadOnly\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'netstandard_Debug|AnyCPU' ">
+    <OutputPath>bin\netstandard_Debug\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'netstandard_Release_ReadOnly|AnyCPU' ">
+    <OutputPath>bin\netstandard_Release_ReadOnly\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'netstandard_Release|AnyCPU' ">
+    <OutputPath>bin\netstandard_Release\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>bin\Debug\</OutputPath>
+  </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Mono.Cecil.csproj">
       <Project>{D68133BD-1E63-496E-9EDE-4FBDBF77B486}</Project>

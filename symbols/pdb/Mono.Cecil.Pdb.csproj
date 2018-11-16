@@ -6,17 +6,19 @@
     <AssemblyName>Mono.Cecil.Pdb</AssemblyName>
     <NoWarn>0649</NoWarn>
   </PropertyGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\Mono.Cecil.csproj">
-      <Project>{D68133BD-1E63-496E-9EDE-4FBDBF77B486}</Project>
-      <Name>Mono.Cecil</Name>
-    </ProjectReference>
-  </ItemGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>bin\Debug\</OutputPath>
+  </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\..\ProjectInfo.cs" />
     <Compile Include="Microsoft.Cci.Pdb\*.cs" />
     <Compile Include="Mono.Cecil.Pdb\*.cs" />
   </ItemGroup>
-  <Import Project="..\..\Mono.Cecil.props" />
-  <Import Project="$(MSBuildCSharpTargets)" Condition=" ! $(NetStandard) " />
+  <ItemGroup>
+    <ProjectReference Include="..\..\Mono.Cecil.csproj">
+      <Project>{d68133bd-1e63-496e-9ede-4fbdbf77b486}</Project>
+      <Name>Mono.Cecil</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
